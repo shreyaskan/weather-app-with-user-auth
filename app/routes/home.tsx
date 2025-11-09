@@ -2,30 +2,6 @@ import { getServerClient } from "~/server";
 import type { Route } from "./+types/home";
 import { data, redirect, Form } from "react-router";
 import getWeatherData from "../weather/GetWeatherData";
-import { tempData, timeData } from "~/weather/TestChartData";
-import "chartjs-adapter-date-fns";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  TimeScale,
-} from "chart.js";
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  TimeScale
-);
 
 export async function action({ request }: Route.ActionArgs) {
   const supabaseClient = getServerClient(request);
