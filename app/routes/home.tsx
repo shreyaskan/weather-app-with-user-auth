@@ -2,6 +2,7 @@ import { getServerClient } from "~/server";
 import type { Route } from "./+types/home";
 import { data, redirect, Form } from "react-router";
 import getWeatherData from "../weather/GetWeatherData";
+import NavBar from "~/ui/components/NavBar";
 
 export async function action({ request }: Route.ActionArgs) {
   const supabaseClient = getServerClient(request);
@@ -9,7 +10,7 @@ export async function action({ request }: Route.ActionArgs) {
   try {
     await supabaseClient.client.auth.signOut();
 
-    return redirect("/login", { headers: supabaseClient.headers });
+    return redirect("/", { headers: supabaseClient.headers });
   } catch (error) {
     console.error(error);
     return data(
@@ -77,6 +78,7 @@ export default function home({ loaderData, actionData }: Route.ComponentProps) {
 
   return (
     <>
+      <NavBar showConfig showLogout />
       <div>
         Hi {firstname} {lastname}. You're from {location}, right?
         <br />
@@ -85,15 +87,6 @@ export default function home({ loaderData, actionData }: Route.ComponentProps) {
         <br />
         {location}'s current temperature: {currentTemperature} °C
       </div>
-      <Form method="post">
-        <button
-          className="bg-white text-black m-2 p-2 rounded-md"
-          type="submit"
-        >
-          Logout
-        </button>
-      </Form>
-      <div></div>
     </>
   );
 }
