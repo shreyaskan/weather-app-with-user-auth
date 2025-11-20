@@ -28,16 +28,14 @@ export async function action({ request }: Route.ActionArgs) {
   try {
     const formData = await request.formData();
 
-    const dataFields = Object.fromEntries(
+    const formFields = Object.fromEntries(
       Array.from(formData.entries()).map(([key, value]) => [key, String(value)])
     );
 
     const { firstname, lastname, email, location, passwordone, passwordtwo } =
-      dataFields;
+      formFields;
 
     let isPasswordSame = passwordone === passwordtwo;
-
-    console.log("passwordone", passwordone);
 
     const { data } = await supabase
       .from("auth.users")
@@ -47,7 +45,7 @@ export async function action({ request }: Route.ActionArgs) {
 
     let existingUser = data !== null;
 
-    const geocode = await getGeocode("London");
+    const geocode = await getGeocode(location);
 
     let invalidLocation = geocode === "ZERO_RESULTS";
     let isApiError = geocode === "Error";
@@ -70,7 +68,7 @@ export async function action({ request }: Route.ActionArgs) {
           },
         });
       if (isPasswordSame && !existingUser && !error) {
-        console.log("New user has been created in the database:", dataFields);
+        console.log("New user has been created in the database:", formFields);
         return {
           user: signUpData?.user,
           headers: supabaseServerClient.headers,
