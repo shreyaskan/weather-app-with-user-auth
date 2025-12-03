@@ -1,6 +1,6 @@
 import { useNavigation } from "react-router";
 import { useState, useEffect } from "react";
-import type { Route } from "./+types/config";
+import type { Route } from "../config/+types/index";
 import { getServerClient } from "~/server";
 import React from "react";
 import SaveAsIcon from "@mui/icons-material/SaveAs";
@@ -26,7 +26,6 @@ export async function loader({ request }: Route.LoaderArgs) {
 export async function action({ request }: Route.ActionArgs) {
   try {
     const formData = Object.fromEntries(await request.formData());
-    const supabaseServerClient = getServerClient(request);
 
     const geocode = await getGeocode(String(formData.location));
 
@@ -41,6 +40,8 @@ export async function action({ request }: Route.ActionArgs) {
           location: String(formData.location),
           firstname: String(formData.firstname),
           lastname: String(formData.lastname),
+          latitude: String(geocode.lat),
+          longitude: String(geocode.lng),
         },
       });
       if (!error) {
@@ -96,6 +97,12 @@ export default function Config({
     { label: "E-mail Address", data: email, name: "email" },
   ];
 
+  useEffect(() => {
+    if (error === undefined) {
+      setEditMode(false);
+    }
+  }, [error]);
+
   return (
     <div className="flex flex-col min-h-screen bg-[#000000] text-[#1DCD9F]">
       <NavBar showLogout />
@@ -132,17 +139,7 @@ export default function Config({
               >
                 Cancel
               </button>
-              {editMode ? (
-                <button
-                  type="submit"
-                  className="bg-[#1DCD9F] text-[#222222] text-md py-2 px-4 rounded-md"
-                >
-                  <SaveAsIcon
-                    sx={{ fontSize: "1.5rem", paddingRight: "0.5rem" }}
-                  />
-                  Save
-                </button>
-              ) : (
+              {!editMode && (
                 <button
                   type="button"
                   onClick={() => setEditMode(true)}
@@ -152,6 +149,17 @@ export default function Config({
                     sx={{ fontSize: "1.5rem", paddingRight: "0.5rem" }}
                   />
                   Edit
+                </button>
+              )}
+              {editMode && (
+                <button
+                  type="submit"
+                  className="bg-[#1DCD9F] text-[#222222] text-md py-2 px-4 rounded-md"
+                >
+                  <SaveAsIcon
+                    sx={{ fontSize: "1.5rem", paddingRight: "0.5rem" }}
+                  />
+                  Save
                 </button>
               )}
             </div>
