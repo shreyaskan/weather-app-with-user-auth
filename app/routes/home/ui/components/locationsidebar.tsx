@@ -14,6 +14,7 @@ export default function LocationSidebar({
 
   return (
     <div className="flex flex-col items-center justify-start min-w-fit w-1/3 bg-[#222222] h-screen text-whitesmoke md:w-60">
+      <div>Hi</div>
       <h2 className=" pt-8">Other Locations</h2>
       <div className="flex flex-col items-start justify-start mt-4">
         {locationData.map((location: any, index: any) => {
