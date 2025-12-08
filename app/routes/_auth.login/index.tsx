@@ -1,19 +1,13 @@
-import {
-  Form,
-  Link,
-  redirect,
-  useNavigate,
-  type MetaFunction,
-  data,
-} from "react-router";
-import type { Route } from "./+types/login";
-import { getServerClient } from "~/server";
+import { Form, Link, useNavigate, type MetaFunction } from "react-router";
 import { createBrowserClient } from "@supabase/ssr";
 import { useState } from "react";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import WbSunnyOutlinedIcon from "@mui/icons-material/WbSunnyOutlined";
 import CloudOutlinedIcon from "@mui/icons-material/CloudOutlined";
 import AcUnitOutlinedIcon from "@mui/icons-material/AcUnitOutlined";
+import { loader } from "./server.loader";
+
+export { loader };
 
 export const meta: MetaFunction = () => {
   return [
@@ -25,26 +19,8 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-export async function loader({ request }: Route.LoaderArgs) {
-  const sbServerClient = getServerClient(request);
-  const userResponse = await sbServerClient.client.auth.getUser();
-
-  if (userResponse?.data?.user) {
-    throw redirect("/home", { headers: sbServerClient.headers });
-  }
-
-  return data(
-    {
-      env: {
-        SUPABASE_URL: process.env.SUPABASE_URL!,
-        SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY!,
-      },
-    },
-    { headers: sbServerClient.headers }
-  );
-}
-
-export default function Login({ loaderData }: Route.ComponentProps) {
+// export default function Login({ loaderData }: Route.ComponentProps) {
+export default function Login({ loaderData }: any) {
   const [error, setError] = useState<string | null>(null);
   const { env } = loaderData;
   const navigate = useNavigate();

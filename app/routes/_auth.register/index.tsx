@@ -1,106 +1,15 @@
-import { Form, redirect } from "react-router";
-import { data as returnData } from "react-router";
-import { supabase } from "../supabase-client";
-import type { Route } from "./+types/register";
+import { Form } from "react-router";
 import { Link } from "react-router";
-import { getServerClient } from "~/server";
-import getGeocode from "../weather/GetGeocode";
 import PersonIcon from "@mui/icons-material/Person";
 import WbSunnyOutlinedIcon from "@mui/icons-material/WbSunnyOutlined";
 import CloudOutlinedIcon from "@mui/icons-material/CloudOutlined";
 import AcUnitOutlinedIcon from "@mui/icons-material/AcUnitOutlined";
+import { loader } from "./server.loader";
 
-export async function loader({ request }: Route.LoaderArgs) {
-  const supabaseServerClient = getServerClient(request);
-  const userResponse = await supabaseServerClient.client.auth.getUser();
+export { loader };
 
-  if (userResponse?.data?.user) {
-    throw redirect("/home", { headers: supabaseServerClient.headers });
-  }
-
-  return returnData(
-    { user: null, error: null },
-    { headers: supabaseServerClient.headers }
-  );
-}
-
-export async function action({ request }: Route.ActionArgs) {
-  try {
-    const formData = await request.formData();
-
-    const formFields = Object.fromEntries(
-      Array.from(formData.entries()).map(([key, value]) => [key, String(value)])
-    );
-
-    const { firstname, lastname, email, location, passwordone, passwordtwo } =
-      formFields;
-
-    let isPasswordSame = passwordone === passwordtwo;
-
-    const { data } = await supabase
-      .from("auth.users")
-      .select("email")
-      .eq("email", email)
-      .single();
-
-    let existingUser = data !== null;
-
-    const geocode = await getGeocode(location);
-
-    let invalidLocation = geocode === "ZERO_RESULTS";
-    let isApiError = geocode === "Error";
-
-    if (!invalidLocation && !isApiError) {
-      const supabaseServerClient = getServerClient(request);
-      const { data: signUpData, error } =
-        await supabaseServerClient.client.auth.signUp({
-          email: email,
-          password: passwordone,
-          options: {
-            emailRedirectTo: "/home",
-            data: {
-              firstname: firstname,
-              lastname: lastname,
-              location: location,
-              lattitude: geocode.lat,
-              longitude: geocode.lng,
-            },
-          },
-        });
-      if (isPasswordSame && !existingUser && !error) {
-        console.log("New user has been created in the database:", formFields);
-        return {
-          user: signUpData?.user,
-          headers: supabaseServerClient.headers,
-        };
-      } else if (error) {
-        console.log("Sign up error:", error?.message);
-        return {
-          error: error.message,
-          headers: supabaseServerClient.headers,
-        };
-      }
-    }
-
-    if (isApiError) {
-      console.error("API Error, check your Google API Key/connection.");
-    }
-
-    return {
-      isPasswordSame: isPasswordSame,
-      existingUser: existingUser,
-      invalidLocation: invalidLocation,
-      isApiError: isApiError,
-    };
-  } catch (error) {
-    if (error instanceof Error) {
-      return { error: error.message };
-    }
-    return { error: "An unknown error occurred" };
-  }
-}
-
-export default function Register({ actionData }: Route.ComponentProps) {
+// export default function Register({ actionData }: Route.ComponentProps) {
+export default function Register({ actionData }: any) {
   const error = actionData
     ? (actionData as { error: string | null })?.error
     : null;

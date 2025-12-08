@@ -1,85 +1,19 @@
-import { useNavigation } from "react-router";
 import { useState, useEffect } from "react";
-import type { Route } from "../config/+types/index";
-import { getServerClient } from "~/server";
 import React from "react";
 import SaveAsIcon from "@mui/icons-material/SaveAs";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
-import { Form, data } from "react-router";
+import { Form } from "react-router";
 import NavBar from "~/ui/components/NavBar";
-import getGeocode from "~/weather/GetGeocode";
+import { action } from "./server.action";
+import { loader } from "./server.loader";
 
-export async function loader({ request }: Route.LoaderArgs) {
-  const supabaseServerClient = getServerClient(request);
-  const userResponse = await supabaseServerClient.client.auth.getUser();
-  const user = userResponse?.data?.user;
-  const userMetadata = user?.user_metadata;
-
-  return data(
-    {
-      userMetadata: userMetadata,
-    },
-    { headers: supabaseServerClient.headers }
-  );
-}
-
-export async function action({ request }: Route.ActionArgs) {
-  try {
-    const formData = Object.fromEntries(await request.formData());
-
-    const geocode = await getGeocode(String(formData.location));
-
-    let invalidLocation = geocode === "ZERO_RESULTS";
-    let isApiError = geocode === "Error";
-
-    if (!invalidLocation && !isApiError) {
-      const supabaseServerClient = getServerClient(request);
-      const { error } = await supabaseServerClient.client.auth.updateUser({
-        email: String(formData.email),
-        data: {
-          location: String(formData.location),
-          firstname: String(formData.firstname),
-          lastname: String(formData.lastname),
-          latitude: String(geocode.lat),
-          longitude: String(geocode.lng),
-        },
-      });
-      if (!error) {
-        console.log("Updated User Details:", formData);
-        return data({ error: undefined, success: true });
-      } else if (error) {
-        console.log("Error updating the database:", error?.message);
-        return data({ error: error.message, success: false });
-      }
-    }
-
-    if (isApiError) {
-      console.error("API Error, check your Google API Key/connection.");
-      return data({
-        error: "Google API Key error",
-        success: false,
-      });
-    }
-
-    if (invalidLocation) {
-      console.log("Invalid location");
-      return data({
-        error: "Invalid location, please try again",
-        success: false,
-      });
-    }
-  } catch (error) {
-    if (error instanceof Error) {
-      return data({ error: error.message, success: false });
-    }
-    return { error: "An unknown error occurred", success: false };
-  }
-}
+export { action, loader };
 
 export default function Config({
   loaderData,
   actionData,
-}: Route.ComponentProps) {
+  // }: Route.ComponentProps) {
+}: any) {
   const error = actionData?.error;
 
   const [configState, setConfigState] = useState("details");

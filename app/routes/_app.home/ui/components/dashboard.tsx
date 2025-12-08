@@ -1,4 +1,4 @@
-import getWeatherData from "../../../../weather/GetWeatherData";
+import getWeatherData from "~/weatherApi/GetWeatherData";
 
 export default async function Dashboard({
   location,
