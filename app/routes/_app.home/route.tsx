@@ -3,11 +3,11 @@ import LocationSidebar from "./ui/components/locationsidebar";
 import { useState } from "react";
 import { action } from "./server.action";
 import { loader } from "./server.loader";
+import type { Route } from "../_app.home/+types/route";
 
 export { action, loader };
 
-// export default function home({ loaderData, actionData }: Route.ComponentProps) {
-export default function home({ loaderData, actionData }: any) {
+export default function home({ loaderData, actionData }: Route.ComponentProps) {
   const userMetaData = loaderData?.userMetaData;
   const location = userMetaData?.location;
   const latitude = userMetaData?.latitude;

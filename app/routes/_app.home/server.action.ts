@@ -2,8 +2,9 @@ import { getServerClient } from "~/server";
 import { data, redirect } from "react-router";
 import { supabase } from "~/supabase-client";
 import getGeocode from "~/weatherApi/GetGeocode";
+import type { Route } from "../_app.home/+types/route";
 
-export async function action({ request }: any) {
+export async function action({ request }: Route.ActionArgs) {
   const formData = Object.fromEntries(await request.formData());
   const actionType = formData._action;
 

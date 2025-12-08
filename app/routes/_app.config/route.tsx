@@ -6,14 +6,14 @@ import { Form } from "react-router";
 import NavBar from "~/ui/components/NavBar";
 import { action } from "./server.action";
 import { loader } from "./server.loader";
+import type { Route } from "../_app.config/+types/route";
 
 export { action, loader };
 
 export default function Config({
   loaderData,
   actionData,
-  // }: Route.ComponentProps) {
-}: any) {
+}: Route.ComponentProps) {
   const error = actionData?.error;
 
   const [configState, setConfigState] = useState("details");

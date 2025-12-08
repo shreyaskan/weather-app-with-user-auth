@@ -1,9 +1,9 @@
 import { getServerClient } from "~/server";
 import { data, redirect } from "react-router";
 import { supabase } from "~/supabase-client";
+import type { Route } from "../_app.home/+types/route";
 
-// export async function loader({ request }: Route.LoaderArgs) {
-export async function loader({ request }: any) {
+export async function loader({ request }: Route.LoaderArgs) {
   const supabaseServerClient = getServerClient(request);
   const userResponse = await supabaseServerClient.client.auth.getUser();
   const user = userResponse?.data?.user;

@@ -1,8 +1,9 @@
 import { getServerClient } from "~/server";
 import { data } from "react-router";
 import getGeocode from "~/weatherApi/GetGeocode";
+import type { Route } from "../_app.config/+types/route";
 
-export async function action({ request }: any) {
+export async function action({ request }: Route.ActionArgs) {
   try {
     const formData = Object.fromEntries(await request.formData());
 

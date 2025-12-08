@@ -3,6 +3,7 @@ import { redirect } from "react-router";
 import { getServerClient } from "~/server";
 import Logo from "~/ui/components/Logo";
 import NavBar from "~/ui/components/NavBar";
+import type { Route } from "./+types/_app._index";
 
 export const meta: MetaFunction = () => {
   return [
@@ -17,8 +18,7 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-// export async function loader({ request }: Route.LoaderArgs) {
-export async function loader({ request }: any) {
+export async function loader({ request }: Route.LoaderArgs) {
   try {
     const sbServerCient = getServerClient(request);
     const userResponse = await sbServerCient.client.auth.getUser();

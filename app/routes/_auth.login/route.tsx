@@ -6,6 +6,7 @@ import WbSunnyOutlinedIcon from "@mui/icons-material/WbSunnyOutlined";
 import CloudOutlinedIcon from "@mui/icons-material/CloudOutlined";
 import AcUnitOutlinedIcon from "@mui/icons-material/AcUnitOutlined";
 import { loader } from "./server.loader";
+import type { Route } from "../_auth.login/+types/route";
 
 export { loader };
 
@@ -19,8 +20,7 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-// export default function Login({ loaderData }: Route.ComponentProps) {
-export default function Login({ loaderData }: any) {
+export default function Login({ loaderData }: Route.ComponentProps) {
   const [error, setError] = useState<string | null>(null);
   const { env } = loaderData;
   const navigate = useNavigate();
