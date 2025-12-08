@@ -1,15 +1,14 @@
+import { z } from "zod";
 import { getServerClient } from "~/server";
 import getGeocode from "~/weatherApi/GetGeocode";
-import type { Route } from "../_auth.register/+types/route";
-import { z } from "zod";
-import { redirect } from "react-router";
+import type { Route } from "../_app.config/+types/route";
 
-const RegisterFormSchema = z.object({
+const ConfigFormSchema = z.object({
   firstname: z.string({ message: "Please enter a valid name." }),
   lastname: z.string({ message: "Please enter a valid name." }),
-  email: z.email({ message: "Please enter a valid e-mail address." }),
   location: z.string(),
-  password: z.string(),
+  email: z.email({ message: "Please enter a valid e-mail address." }),
+  password: z.string({ message: "Please enter a valid e-mail address." }),
 });
 
 export async function action({ request }: Route.ActionArgs) {
@@ -19,7 +18,7 @@ export async function action({ request }: Route.ActionArgs) {
     success,
     data: payload,
     error,
-  } = RegisterFormSchema.safeParse(
+  } = ConfigFormSchema.safeParse(
     Object.fromEntries(Array.from(formData.entries()))
   );
 
@@ -27,6 +26,7 @@ export async function action({ request }: Route.ActionArgs) {
 
   if (error?.message) {
     console.error("Form Validation error:", error.message);
+    return { validationError: error.message };
   }
 
   const geocodeApiError = locationValidation === "Error";
@@ -34,24 +34,18 @@ export async function action({ request }: Route.ActionArgs) {
 
   if (success && !invalidLocation && !geocodeApiError) {
     const supabaseServerClient = getServerClient(request);
-    const { data, error } = await supabaseServerClient.client.auth.signUp({
-      email: payload?.email,
-      password: payload?.password,
-      options: {
-        emailRedirectTo: "/home",
+    const { error: dBError } =
+      await supabaseServerClient.client.auth.updateUser({
+        email: payload.email,
         data: {
-          firstname: payload?.firstname,
-          lastname: payload?.lastname,
           location: payload.location,
-          lattitude: locationValidation.lat,
+          firstname: payload.firstname,
+          lastname: payload.lastname,
+          latitude: locationValidation.lat,
           longitude: locationValidation.lng,
         },
-      },
-    });
-
-    if (!error && data.user === null) {
-      return redirect("/login?error=existing-user");
-    }
+      });
+    return { dBError };
   }
 
   return { geocodeApiError, invalidLocation };
