@@ -1,4 +1,4 @@
-import { loader } from "./server.loader";
+import { loader } from "./loader.server";
 import { action } from "./action.server";
 import type { Route } from "../_auth.register/+types/route";
 import NavBar from "~/ui/components/NavBar";

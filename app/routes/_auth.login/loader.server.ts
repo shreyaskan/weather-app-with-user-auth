@@ -9,14 +9,4 @@ export async function loader({ request }: Route.LoaderArgs) {
   if (userResponse?.data?.user) {
     throw redirect("/home", { headers: sbServerClient.headers });
   }
-
-  return data(
-    {
-      env: {
-        SUPABASE_URL: process.env.SUPABASE_URL!,
-        SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY!,
-      },
-    },
-    { headers: sbServerClient.headers }
-  );
 }

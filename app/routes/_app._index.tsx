@@ -20,11 +20,11 @@ export const meta: MetaFunction = () => {
 
 export async function loader({ request }: Route.LoaderArgs) {
   try {
-    const sbServerCient = getServerClient(request);
-    const userResponse = await sbServerCient.client.auth.getUser();
+    const sbServerClient = getServerClient(request);
+    const userResponse = await sbServerClient.client.auth.getUser();
 
     if (userResponse?.data?.user) {
-      throw redirect("/home", { headers: sbServerCient.headers });
+      throw redirect("/home", { headers: sbServerClient.headers });
     }
   } catch (error) {
     console.log("Supabase client error:", error);
