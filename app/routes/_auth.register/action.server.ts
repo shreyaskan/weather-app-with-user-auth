@@ -1,4 +1,3 @@
-import { supabase } from "~/supabase-client";
 import { getServerClient } from "~/server";
 import getGeocode from "~/weatherApi/GetGeocode";
 import type { Route } from "../_auth.register/+types/route";
@@ -27,7 +26,7 @@ export async function action({ request }: Route.ActionArgs) {
   const locationValidation = await getGeocode(payload?.location as string);
 
   if (error?.message) {
-    console.log("Form Validation error:", error.message);
+    console.error("Form Validation error:", error.message);
   }
 
   const geocodeApiError = locationValidation === "Error";
