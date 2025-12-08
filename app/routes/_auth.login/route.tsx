@@ -10,16 +10,6 @@ import type { Route } from "../_auth.login/+types/route";
 
 export { loader };
 
-export const meta: MetaFunction = () => {
-  return [
-    { title: "Login - New React Router Supabase App" },
-    {
-      name: "description",
-      content: "Login to your account in React Router with Supabase!",
-    },
-  ];
-};
-
 export default function Login({ loaderData }: Route.ComponentProps) {
   const [error, setError] = useState<string | null>(null);
   const { env } = loaderData;

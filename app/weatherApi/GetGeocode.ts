@@ -9,16 +9,14 @@ export default async function getGeocode(city: string) {
 
     if (data.status === "OK") {
       const result = data.results[0];
-      console.log("Valid city:", result.formatted_address);
       console.log("Geocode:", result.geometry.location);
       const location = result.geometry.location;
       return location;
     } else {
-      console.log("Invalid city or API error");
+      console.log("Invalid city or API error. Status:", data.status);
       return data.status;
     }
   } catch (error) {
     console.log(error);
-    return "Error";
   }
 }
