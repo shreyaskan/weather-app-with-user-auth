@@ -1,4 +1,4 @@
-import { Form, Link, useNavigate, type MetaFunction } from "react-router";
+import { Form, Link, useNavigate, useSearchParams } from "react-router";
 import { createBrowserClient } from "@supabase/ssr";
 import { useState } from "react";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
@@ -10,17 +10,10 @@ import type { Route } from "../_auth.login/+types/route";
 
 export { loader };
 
-export const meta: MetaFunction = () => {
-  return [
-    { title: "Login - New React Router Supabase App" },
-    {
-      name: "description",
-      content: "Login to your account in React Router with Supabase!",
-    },
-  ];
-};
-
 export default function Login({ loaderData }: Route.ComponentProps) {
+  const [searchParams] = useSearchParams();
+  const existingUser = searchParams.get("error");
+
   const [error, setError] = useState<string | null>(null);
   const { env } = loaderData;
   const navigate = useNavigate();
@@ -77,6 +70,11 @@ export default function Login({ loaderData }: Route.ComponentProps) {
           <div className="flex flex-col items-center justify-center p-8 w-content rounded-md bg-[#1DCD9F]">
             <h2 className="text-2xl mx-20">Login Page</h2>
             {error && <p className="text-red-600 mt-4">{error}</p>}
+            {existingUser && (
+              <p className="text-red-600 mt-4">
+                You already have an account, please sign in below.
+              </p>
+            )}
             <Form
               method="post"
               onSubmit={handleSubmit}

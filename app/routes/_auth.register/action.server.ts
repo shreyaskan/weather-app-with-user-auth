@@ -2,85 +2,58 @@ import { supabase } from "~/supabase-client";
 import { getServerClient } from "~/server";
 import getGeocode from "~/weatherApi/GetGeocode";
 import type { Route } from "../_auth.register/+types/route";
+import { z } from "zod";
+import { redirect } from "react-router";
+
+const RegisterFormSchema = z.object({
+  firstname: z.string({ message: "Please enter a valid first name." }),
+  lastname: z.string({ message: "Please enter a valid last name." }),
+  email: z.email({ message: "Please enter a valid e-mail address." }),
+  location: z.string(),
+  password: z.string(),
+});
 
 export async function action({ request }: Route.ActionArgs) {
-  try {
-    const formData = await request.formData();
+  const formData = await request.formData();
 
-    // const formFields = Object.fromEntries(Array.from(formData.entries()));
-    const formFields = {
-      firstname: "Shreyas",
-      lastname: "kan",
-      email: "shreyas@gmail.com",
-      location: "bengaluru",
-      passwordone: "password",
-      passwordtwo: "password",
-    };
+  const {
+    success,
+    data: payload,
+    error,
+  } = RegisterFormSchema.safeParse(
+    Object.fromEntries(Array.from(formData.entries()))
+  );
 
-    const { firstname, lastname, email, location, passwordone, passwordtwo } =
-      formFields;
+  const locationValidation = await getGeocode(payload?.location as string);
 
-    let isPasswordSame = passwordone === passwordtwo;
-
-    const { data } = await supabase
-      .from("auth.users")
-      .select("email")
-      .eq("email", email)
-      .single();
-
-    let existingUser = data !== null;
-
-    const geocode = await getGeocode(location);
-
-    let invalidLocation = geocode === "ZERO_RESULTS";
-    let isApiError = geocode === "Error";
-
-    if (!invalidLocation && !isApiError) {
-      const supabaseServerClient = getServerClient(request);
-      const { data: signUpData, error } =
-        await supabaseServerClient.client.auth.signUp({
-          email: email,
-          password: passwordone,
-          options: {
-            emailRedirectTo: "/home",
-            data: {
-              firstname: firstname,
-              lastname: lastname,
-              location: location,
-              lattitude: geocode.lat,
-              longitude: geocode.lng,
-            },
-          },
-        });
-      if (isPasswordSame && !existingUser && !error) {
-        console.log("New user has been created in the database:", formFields);
-        return {
-          user: signUpData?.user,
-          headers: supabaseServerClient.headers,
-        };
-      } else if (error) {
-        console.log("Sign up error:", error?.message);
-        return {
-          error: error.message,
-          headers: supabaseServerClient.headers,
-        };
-      }
-    }
-
-    if (isApiError) {
-      console.error("API Error, check your Google API Key/connection.");
-    }
-
-    return {
-      isPasswordSame: isPasswordSame,
-      existingUser: existingUser,
-      invalidLocation: invalidLocation,
-      isApiError: isApiError,
-    };
-  } catch (error) {
-    if (error instanceof Error) {
-      return { error: error.message };
-    }
-    return { error: "An unknown error occurred" };
+  if (error?.message) {
+    console.log("Form Validation error:", error.message);
   }
+
+  const geocodeApiError = locationValidation === "Error";
+  const invalidLocation = locationValidation === "ZERO_RESULTS";
+
+  if (success && !invalidLocation && !geocodeApiError) {
+    const supabaseServerClient = getServerClient(request);
+    const { data, error } = await supabaseServerClient.client.auth.signUp({
+      email: payload?.email,
+      password: payload?.password,
+      options: {
+        emailRedirectTo: "/home",
+        data: {
+          firstname: payload?.firstname,
+          lastname: payload?.lastname,
+          location: payload.location,
+          lattitude: locationValidation.lat,
+          longitude: locationValidation.lng,
+        },
+      },
+    });
+
+    if (!error && data.user === null) {
+      return redirect("/login?error=existing-user");
+    }
+  }
+
+  return { geocodeApiError, invalidLocation };
 }
