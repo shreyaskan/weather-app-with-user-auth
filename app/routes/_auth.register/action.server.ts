@@ -24,18 +24,6 @@ export async function action({ request }: Route.ActionArgs) {
     Object.fromEntries(Array.from(formData.entries()))
   );
 
-  const { data, error: checkError } = await supabase
-    .from("auth.users")
-    .select("email")
-    .eq("email", payload?.email)
-    .single();
-
-  const existingUser = data !== null;
-
-  console.log("checkError:", checkError);
-
-  if (existingUser) return redirect("/login");
-
   const locationValidation = await getGeocode(payload?.location as string);
 
   if (error?.message) {
@@ -47,7 +35,7 @@ export async function action({ request }: Route.ActionArgs) {
 
   if (success && !invalidLocation && !geocodeApiError) {
     const supabaseServerClient = getServerClient(request);
-    await supabaseServerClient.client.auth.signUp({
+    const { data, error } = await supabaseServerClient.client.auth.signUp({
       email: payload?.email,
       password: payload?.password,
       options: {
@@ -61,7 +49,10 @@ export async function action({ request }: Route.ActionArgs) {
         },
       },
     });
-    console.log("New user has been created in the database");
+
+    if (!error && data.user === null) {
+      return redirect("/login?error=existing-user");
+    }
   }
 
   return { geocodeApiError, invalidLocation };
