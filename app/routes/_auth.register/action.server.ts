@@ -1,9 +1,9 @@
 import { supabase } from "~/supabase-client";
 import { getServerClient } from "~/server";
 import getGeocode from "~/weatherApi/GetGeocode";
+import type { Route } from "../_auth.register/+types/route";
 
-// export async function action({ request }: Route.ActionArgs) {
-export async function action({ request }: any) {
+export async function action({ request }: Route.ActionArgs) {
   try {
     const formData = await request.formData();
 

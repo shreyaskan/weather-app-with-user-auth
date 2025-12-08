@@ -1,9 +1,9 @@
 import { redirect } from "react-router";
 import { data as returnData } from "react-router";
 import { getServerClient } from "~/server";
+import type { Route } from "../_auth.register/+types/route";
 
-// export async function loader({ request }: Route.LoaderArgs) {
-export async function loader({ request }: any) {
+export async function loader({ request }: Route.LoaderArgs) {
   const supabaseServerClient = getServerClient(request);
   const userResponse = await supabaseServerClient.client.auth.getUser();
 

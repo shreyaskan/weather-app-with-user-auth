@@ -5,11 +5,12 @@ import WbSunnyOutlinedIcon from "@mui/icons-material/WbSunnyOutlined";
 import CloudOutlinedIcon from "@mui/icons-material/CloudOutlined";
 import AcUnitOutlinedIcon from "@mui/icons-material/AcUnitOutlined";
 import { loader } from "./server.loader";
+import { action } from "./action.server";
+import type { Route } from "../_auth.register/+types/route";
 
-export { loader };
+export { loader, action };
 
-// export default function Register({ actionData }: Route.ComponentProps) {
-export default function Register({ actionData }: any) {
+export default function Register({ actionData }: Route.ComponentProps) {
   const error = actionData
     ? (actionData as { error: string | null })?.error
     : null;
