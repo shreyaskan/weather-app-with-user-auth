@@ -1,19 +1,10 @@
-import { useState, useEffect } from "react";
-import { Form } from "react-router";
+import { useState } from "react";
+import { useLoaderData } from "react-router";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-export default function LocationSidebar({
-  locationData,
-  locationError,
-  setSelectedLocation,
-}: any) {
-  // useEffect(() => {
-  //   if (locationError === undefined) {
-  //     setIsAddingLocation(false);
-  //   }
-  // }, [locationError]);
-
-  // const [isAddingLocation, setIsAddingLocation] = useState(false);
+export default function LocationSidebar({ setSelectedLocation }: any) {
+  const loaderData = useLoaderData();
+  const locationData = loaderData?.locationData;
   const [showDelete, setShowDelete] = useState(null);
 
   function onLocationClick(location: any) {
@@ -21,7 +12,8 @@ export default function LocationSidebar({
     setShowDelete(location);
   }
 
-  async function onDelete(location: any) {
+  async function onDelete(location: string) {
+    // need to include user email
     // await supabase.from("locations").delete().eq("location", location);
   }
 
@@ -41,7 +33,7 @@ export default function LocationSidebar({
               </button>
               {showDelete === location.location && (
                 <button
-                  // hidden={location.location === showDelete}
+                  hidden={location.location === showDelete}
                   className="p-2 m-2 border-[#169976] border-2 rounded-md cursor-pointer"
                   onClick={() => onDelete(location.location)}
                 >

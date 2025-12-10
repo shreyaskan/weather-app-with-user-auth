@@ -8,17 +8,15 @@ import type { Route } from "../_app.home/+types/route";
 export { action, loader };
 
 export default function home({ loaderData, actionData }: Route.ComponentProps) {
-  const userMetaData = loaderData?.userMetaData;
-  const location = userMetaData?.location;
-  const latitude = userMetaData?.latitude;
-  const longitude = userMetaData?.longitude;
+  const location = loaderData?.userMetaData?.location;
+  const latitude = loaderData?.userMetaData?.latitude;
+  const longitude = loaderData?.userMetaData?.longitude;
   const error = (actionData as { error: string | null })?.error;
-  const locationData = loaderData?.locationData;
   const locationError = actionData?.error;
 
   const [showSidebar, setShowSidebar] = useState<boolean>(false);
   const [selectedLocation, setSelectedLocation] = useState<string>(
-    userMetaData?.location
+    loaderData?.userMetaData?.location
   );
 
   return (
@@ -27,18 +25,17 @@ export default function home({ loaderData, actionData }: Route.ComponentProps) {
       <div className=" flex">
         {showSidebar && (
           <LocationSidebar
-            locationData={locationData}
             locationError={String(locationError)}
             setSelectedLocation={setSelectedLocation}
           />
         )}
         <div>
-          Hi {userMetaData?.firstname} {userMetaData?.lastname}. You're from{" "}
-          {userMetaData?.location}, right?
+          Hi {loaderData?.userMetaData?.firstname}{" "}
+          {loaderData?.userMetaData?.lastname}. You're from{" "}
+          {loaderData?.userMetaData?.location}, right?
           <br />
           You want to know the current weather in {selectedLocation} right?
         </div>
-        {/* <Dashboard location={location} latitude={latitude} longitude={longitude}/> */}
       </div>
     </>
   );
