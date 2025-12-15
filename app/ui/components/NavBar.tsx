@@ -25,8 +25,8 @@ export default function NavBar({
 
   function onSubmit() {
     const formData = new FormData();
-    formData.append("_action", "logout");
-    fetcher.submit(formData, { method: "post" });
+    formData.append("action_source", "logout");
+    fetcher.submit(formData, { method: "POST" });
   }
   return (
     <nav className="flex justify-between items-center pt-2 bg-[#222222]">
@@ -73,7 +73,7 @@ export default function NavBar({
         )}
         {showLogout && (
           <button
-            name="_action"
+            name="action_source"
             value="logout"
             type="button"
             onClick={onSubmit}
