@@ -1,14 +1,14 @@
 import { getServerClient } from "~/server";
 import { data, redirect } from "react-router";
 import { supabase } from "~/supabase-client";
-import type { Route } from "../_app.home/+types/route";
+import type { Route } from "./+types/route";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const supabaseServerClient = getServerClient(request);
   const userResponse = await supabaseServerClient.client.auth.getUser();
   const user = userResponse?.data?.user;
   const userMetaData = user?.user_metadata;
-  const locationData = await supabase
+  const { data: locationData } = await supabase
     .from("locations")
     .select("*")
     .eq("useremail", user?.email);
@@ -19,9 +19,9 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   return data(
     {
-      user: userResponse?.data?.user || null,
-      locationData: locationData.data,
-      userMetaData: userMetaData,
+      user,
+      locationData,
+      userMetaData,
     },
     { headers: supabaseServerClient.headers }
   );
