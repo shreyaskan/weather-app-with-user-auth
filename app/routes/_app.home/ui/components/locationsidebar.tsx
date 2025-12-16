@@ -1,17 +1,12 @@
 import { useState } from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddLocationForm from "./add-location-form";
+import { useFetcher, useLoaderData } from "react-router";
 
 export default function LocationSidebar({
-  locationData,
   setSelectedLocation,
+  selectedLocation,
 }: any) {
-  // useEffect(() => {
-  //   if (locationError === undefined) {
-  //     setIsAddingLocation(false);
-  //   }
-  // }, [locationError]);
-
   const [showDelete, setShowDelete] = useState(null);
   const [addNewLocation, setAddNewLocation] = useState(false);
 
@@ -20,9 +15,14 @@ export default function LocationSidebar({
     setShowDelete(location);
   }
 
+  const { locationData } = useLoaderData();
+  const fetcher = useFetcher();
+
   async function onDelete(location: any) {
-    // need to get user's email too, do it in action function
-    // await supabase.from("locations").delete().eq("location", location);
+    fetcher.submit(
+      { location },
+      { method: "DELETE", action: "/api/locations" }
+    );
   }
 
   return (
@@ -30,7 +30,7 @@ export default function LocationSidebar({
       <h2 className=" pt-8">Other Locations</h2>
       <div className="flex flex-col items-start justify-start mt-4">
         {locationData &&
-          locationData.map((location: any, index: any) => {
+          locationData.map((location: any, index: number) => {
             return (
               <div>
                 <button
@@ -40,15 +40,13 @@ export default function LocationSidebar({
                 >
                   {location.location}
                 </button>
-                {showDelete === location.location && (
-                  <button
-                    hidden={location.location === showDelete}
-                    className="p-2 m-2 border-[#169976] border-2 rounded-md cursor-pointer"
-                    onClick={() => onDelete(location.location)}
-                  >
-                    <DeleteIcon sx={{ fontSize: "1.5rem" }} />
-                  </button>
-                )}
+                <button
+                  hidden={selectedLocation !== location.location}
+                  className="p-2 m-2 border-[#169976] border-2 rounded-md cursor-pointer"
+                  onClick={() => onDelete(location.location)}
+                >
+                  <DeleteIcon sx={{ fontSize: "1.5rem" }} />
+                </button>
               </div>
             );
           })}
