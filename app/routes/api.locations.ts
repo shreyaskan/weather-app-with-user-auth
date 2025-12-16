@@ -33,14 +33,29 @@ export async function action({ request }: Route.ActionArgs) {
   const geocodeApiError = locationValidation === "Error";
   const invalidLocation = locationValidation === "ZERO_RESULTS";
 
-  if (success && !invalidLocation && !geocodeApiError) {
+  if (
+    success &&
+    !invalidLocation &&
+    !geocodeApiError &&
+    request.method === "POST"
+  ) {
     const { error: dBError } = await supabase.from("locations").insert({
       useremail: userEmail,
-      location,
+      location: payload?.location,
       latitude: locationValidation.lat,
       longitude: locationValidation.lng,
     });
+    console.log("dbError:", dBError);
     return { dBError };
+  }
+
+  if (request.method === "DELETE") {
+    console.log(payload?.location);
+    await supabase
+      .from("locations")
+      .delete()
+      .eq("location", payload?.location)
+      .eq("useremail", userEmail);
   }
 
   return { geocodeApiError, invalidLocation };

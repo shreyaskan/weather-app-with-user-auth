@@ -6,7 +6,6 @@ import PersonIcon from "@mui/icons-material/Person";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import LogoutIcon from "@mui/icons-material/Logout";
 import PublicIcon from "@mui/icons-material/Public";
-import { useForm } from "react-hook-form";
 
 export default function NavBar({
   showLogin,
@@ -24,9 +23,7 @@ export default function NavBar({
   const fetcher = useFetcher();
 
   function onSubmit() {
-    const formData = new FormData();
-    formData.append("action_source", "logout");
-    fetcher.submit(formData, { method: "POST" });
+    fetcher.submit({}, { method: "POST" });
   }
   return (
     <nav className="flex justify-between items-center pt-2 bg-[#222222]">
@@ -73,8 +70,6 @@ export default function NavBar({
         )}
         {showLogout && (
           <button
-            name="action_source"
-            value="logout"
             type="button"
             onClick={onSubmit}
             className="flex m-2 px-4 py-2 rounded-md bg-[#169976] text-[#222222] cursor-pointer"
