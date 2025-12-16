@@ -1,25 +1,50 @@
+import { useEffect, useState } from "react";
 import getWeatherData from "~/weatherApi/GetWeatherData";
+import getGeocode from "~/weatherApi/GetGeocode";
+import WeatherChart from "./hourly-temp-graph";
 
-export default async function Dashboard({
-  location,
-  latitude,
-  longitude,
-}: {
-  location: String;
-  latitude: number;
-  longitude: number;
-}) {
-  async function getCurrentWeatherData(latitude: number, longitude: number) {
-    const currentWeatherData = await getWeatherData(latitude, longitude);
-    return currentWeatherData;
+type DashboardProps = {
+  location: string;
+};
+
+type WeatherData = {
+  currentTime: Date;
+  currentTemperature: string;
+  isItDay: number;
+  hourlyTimeData: Date[];
+  hourlyTemperatureData: Float32Array | null;
+  forecastedSunriseDatetime: Date[];
+  forecastedSunsetDatetime: Date[];
+};
+
+export default function Dashboard({ location }: DashboardProps) {
+  const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
+
+  useEffect(() => {
+    async function fetchWeather() {
+      const { lat, lng } = await getGeocode(location as string);
+      const data = await getWeatherData(lat, lng);
+      setWeatherData(data);
+    }
+
+    fetchWeather();
+  }, [location]);
+
+  if (!weatherData) {
+    return <div>Loading...</div>;
   }
 
-  const selectedLocationWeather = await getCurrentWeatherData(
-    latitude,
-    longitude
-  );
+  const {
+    currentTime,
+    currentTemperature,
+    isItDay,
+    hourlyTimeData,
+    hourlyTemperatureData,
+    forecastedSunriseDatetime,
+    forecastedSunsetDatetime,
+  } = weatherData;
 
-  const hourlyTime = new Array(selectedLocationWeather[3]).map((dateTime) =>
+  const hourlyTime = new Array(hourlyTimeData).map((dateTime) =>
     String(dateTime)
   );
 
@@ -33,22 +58,18 @@ export default async function Dashboard({
     })
   );
 
-  const [
-    currentTime,
-    currentTemperature,
-    isItDay,
-    hourlyTimeData,
-    hourlyTemperatureData,
-    forecastedSunriseDatetime,
-    forecastedSunsetDatetime,
-  ] = selectedLocationWeather;
-
   return (
-    <div>
-      It's currently {isItDay ? "day" : "night"} time, hence the{" "}
-      {isItDay ? "light" : "dark"} theme.
-      <br />
-      {location}'s current temperature: {String(currentTemperature)} °C
+    <div className="flex flex-col justify-center items-center w-full">
+      <div className="pt-8">
+        It's currently {isItDay ? "day" : "night"} time in {location}. The time
+        is {currentTime.toLocaleTimeString()}
+        <br />
+        {location}'s current temperature: {currentTemperature} °C
+      </div>
+      <WeatherChart
+        hourlyTimeArray={hourlyTimeArray}
+        hourlyTemperatureData={hourlyTemperatureData}
+      />
     </div>
   );
 }

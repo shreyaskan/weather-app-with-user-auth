@@ -85,7 +85,7 @@ export default async function getWeatherData(
     `\nCurrent temperature_2m: ${weatherData.current.temperature_2m.toFixed(2)}`
   );
 
-  return [
+  return {
     currentTime,
     currentTemperature,
     isItDay,
@@ -93,5 +93,5 @@ export default async function getWeatherData(
     hourlyTemperatureData,
     forecastedSunriseDatetime,
     forecastedSunsetDatetime,
-  ];
+  };
 }
