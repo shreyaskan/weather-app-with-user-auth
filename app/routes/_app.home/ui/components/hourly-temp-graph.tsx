@@ -70,7 +70,7 @@ export default function WeatherChart({
   };
 
   return (
-    <div style={{ width: "1000px", height: "450px" }}>
+    <div className="w-[1000px] h-[450px] border-[#159976] border-2 rounded-md flex items-center justify-center">
       <Line data={data} options={options} />
     </div>
   );
