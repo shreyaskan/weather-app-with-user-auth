@@ -60,11 +60,27 @@ export default function Dashboard({ location }: DashboardProps) {
 
   return (
     <div className="flex flex-col justify-center items-center w-full">
-      <div className="pt-8">
-        It's currently {isItDay ? "day" : "night"} time in {location}. The time
-        is {currentTime.toLocaleTimeString()}
-        <br />
-        {location}'s current temperature: {currentTemperature} °C
+      <div className="pt-8 flex">
+        <div className="bg-[#222222] m-4 flex flex-col items-center justify-center rounded-md min-w-16 border-[#159976] border-2">
+          <div className="p-4">Location</div>
+          <div className="p-4">{location}</div>
+        </div>
+        <div className="bg-[#222222] m-4 flex flex-col items-center justify-center rounded-md min-w-16 border-[#159976] border-2">
+          <div className="p-4">Current Temperature</div>
+          <div className="p-4">{currentTemperature} °C</div>
+        </div>
+        <div className="bg-[#222222] m-4 flex flex-col items-center justify-center rounded-md min-w-16 border-[#159976] border-2">
+          <div className="p-4">Sunrise</div>
+          <div className="p-4">
+            {forecastedSunriseDatetime[0].toLocaleTimeString()}
+          </div>
+        </div>
+        <div className="bg-[#222222] m-4 flex flex-col items-center justify-center rounded-md min-w-16 border-[#159976] border-2">
+          <div className="p-4">Sunset</div>
+          <div className="p-4">
+            {forecastedSunsetDatetime[0].toLocaleTimeString()}
+          </div>
+        </div>
       </div>
       <WeatherChart
         hourlyTimeArray={hourlyTimeArray}

@@ -1,8 +1,5 @@
 import { fetchWeatherApi } from "openmeteo";
 
-const latitude = 52.52;
-const longitude = 13.41;
-
 export default async function getWeatherData(
   latitude: number,
   longitude: number
@@ -78,12 +75,7 @@ export default async function getWeatherData(
   const hourlyTimeData = weatherData.hourly.time;
   const hourlyTemperatureData = weatherData.hourly.temperature_2m;
   const forecastedSunriseDatetime = weatherData.daily.sunrise;
-  const forecastedSunsetDatetime = weatherData.daily.sunrise;
-
-  console.log(
-    `\nCurrent time: ${weatherData.current.time}`,
-    `\nCurrent temperature_2m: ${weatherData.current.temperature_2m.toFixed(2)}`
-  );
+  const forecastedSunsetDatetime = weatherData.daily.sunset;
 
   return {
     currentTime,
